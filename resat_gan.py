@@ -98,7 +98,17 @@ class RESAT_GAN():
             u = Concatenate()([u, att])
             return u
 
+        def decode(layer_input, filters, f_size=4):
+            u = UpSampling2D(size=2)(layer_input)
+            u = Conv2D(filters, kernel_size=f_size, strides=1, padding='same')(u)
+            u = BatchNormalization()(u)
+            u = LeakyReLU(alpha=0.2)(u)
+
+            att = attention_block(u)
+            u = Concatenate()([u, att])
+
         d0 = Input(shape=self.img_shape)
+        #z = Input(shape=(self.latent_dim,))
 
         d1 = conv2d(d0, self.gf)
         d2 = conv2d(d1, self.gf * 2)
@@ -157,7 +167,8 @@ class RESAT_GAN():
             idx = np.random.randint(0, X_train.shape[0], batch_size)
             imgs = X_train[idx]
 
-            noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
+            #noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
+            noise = np.random.normal(0, 1, (batch_size, self.img_shape))
             gen_imgs = self.generator.predict(noise)
 
             d_loss_real = self.discriminator.train_on_batch(imgs, valid)
