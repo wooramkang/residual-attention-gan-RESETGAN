@@ -165,10 +165,8 @@ class RESAT_GAN():
             d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
             g_loss = self.combined.train_on_batch(noise, valid)
-
             print ("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100*d_loss[1], g_loss))
 
-            # If at save interval => save generated image samples
             if epoch % save_interval == 0:
                 self.save_imgs(epoch)
 
